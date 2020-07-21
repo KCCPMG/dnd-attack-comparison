@@ -1,38 +1,58 @@
-.App {
-  text-align: center;
-}
+@import url('https://fonts.googleapis.com/css?family=Alegreya SC');
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
+body {
+  font-family: 'Alegreya SC';
+} 
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+.titlebar {
   color: white;
+  background-color: black;
 }
 
-.App-link {
-  color: #61dafb;
+.add-character-button-div {
+  padding: 30px;
+  display: block;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* .add-character-button {
+  
+} */
+
+.add-attack-button {
+  text-align: 'center'
+}
+
+.character-bar {
+  border: 1px solid black;
+  border-radius: 5px;
+  /* margin: 15px; */
+  padding: 5px;
+}
+
+.character-bar-heading {
+  font-size: 24px;
+}
+
+.character-name {
+  width: auto;
+}
+
+.expand-toggle {
+  cursor: pointer;  
+}
+
+.add-attack {
+  padding-top: 20px;
+}
+
+.attack {
+  font-size: 16px;
+}
+
+.comparison {
+  border: 3px solid black;
+  border-radius: 5px;
+  padding: 5px;
+  margin-top: 25px;
+  margin-bottom: 25px;
 }
