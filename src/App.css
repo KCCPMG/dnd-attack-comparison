@@ -2,7 +2,16 @@
 
 body {
   font-family: 'Alegreya SC';
+  
+  /* noise: 'd62020';
+  density: 100;
+  opacity: 100; */
 } 
+
+body > #app-body {
+  background-color: '#47040f';
+}
+
 
 .titlebar {
   color: white;
@@ -33,12 +42,36 @@ body {
   font-size: 24px;
 }
 
+/* .app > .character-bar:nth-child(odd) .character-bar-heading {
+  background: white url("./assets/21-219468_sword-lostim-black-and-white-drawing-weapon-transparent-left.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 200px 30px;
+}
+
+.app > .character-bar:nth-child(even) .character-bar-heading {
+  background: white url("./assets/21-219468_sword-lostim-black-and-white-drawing-weapon-transparent-right.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 200px 30px;
+} */
+
+
 .character-name {
   width: auto;
 }
 
-.expand-toggle {
+.expand-toggle > .row > .col > svg {
   cursor: pointer;  
+}
+
+.attack-control {
+  cursor: pointer;
+  padding-bottom: 3px;
+}
+
+.svg {
+  transform: translateY(50);
 }
 
 .add-attack {
@@ -56,3 +89,4 @@ body {
   margin-top: 25px;
   margin-bottom: 25px;
 }
+

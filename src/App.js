@@ -11,9 +11,25 @@ class App extends React.Component {
       showCharacterModal: false,
       charModalName: '',
       characters: [],
+      createTrueEditFalse: true,
+      editId: null,
       nextID: 0
     }
-  } 
+  }
+
+  editCharacter = (charId) => {
+
+    var charName = this.state.characters.find(cha => {
+      return (cha.id===charId)
+    }).name
+
+    this.setState({
+      showCharacterModal : true,
+      charModalName: charName,
+      createTrueEditFalse: false,
+      editId: charId
+    })
+  }
   
   handleCreateCharacter = (e) => { 
     e.preventDefault();
@@ -27,9 +43,47 @@ class App extends React.Component {
       showCharacterModal: false,
       charModalName: '',
       characters: charsCopy,
-      nextID: ++this.state.nextID
-    }, ()=> {
-      // console.log(this.state)
+      createTrueEditFalse: true,
+      nextID: ++this.state.nextID,
+      editId: null
+    })
+  }
+
+  handleEditCharacter = (e) => {
+    e.preventDefault();
+    let charsCopy = JSON.parse(JSON.stringify(this.state.characters));
+
+    let character = charsCopy.find(cha => {
+      return (cha.id === this.state.editId);
+    })
+
+    character.name = this.state.charModalName;
+
+    this.setState({
+      showCharacterModal: false,
+      charModalName: '',
+      createTrueEditFalse: true,
+      characters: charsCopy,
+      editId: null
+    })
+  
+  }
+
+  handleDeleteCharacter = (charId) => {
+    let charsCopy = JSON.parse(JSON.stringify(this.state.characters));
+
+    charsCopy = charsCopy.filter(cha => {
+      if (cha.id === charId) return false;
+      else return true;
+    })
+
+    this.setState({
+      showCharacterModal: false,
+      charModalName: '',
+      characters: charsCopy,
+      createTrueEditFalse: true,
+      nextID: ++this.state.nextID,
+      editId: null
     })
   }
 
@@ -61,8 +115,43 @@ class App extends React.Component {
 
     this.setState({
       characters,
-      nextID: ++this.state.nextID
+      nextID: this.state.nextID+1
     })
+  }
+
+  handleEditAttack = (e) => {
+    e.preventDefault();
+
+    let charsCopy = JSON.parse(JSON.stringify(this.state.characters));
+
+    for (let character of charsCopy) {
+      for (let attackIndex in character.attacks) {
+        let attack = character.attacks[attackIndex]
+        if (attack.attackId === e.formData.attackId) {
+          character.attacks[attackIndex] = e.formData;
+          break;
+        }
+      }
+    }
+    this.setState({characters: charsCopy})
+  }
+
+  handleDeleteAttack = (e) => {
+    e.preventDefault();
+
+    let charsCopy = JSON.parse(JSON.stringify(this.state.characters));
+    console.log(e.attackId);
+
+    for (let character of charsCopy) {
+      for (let attackIndex in character.attacks) {
+        if (character.attacks[attackIndex].attackId === e.attackId) {
+          character.attacks.splice(attackIndex, 1);
+          break;
+        }
+      }
+    }
+
+    this.setState({characters: charsCopy})
   }
 
 
@@ -89,7 +178,11 @@ class App extends React.Component {
           char={char} 
           key={char.id} 
           handleAddAttack={this.handleAddAttack}
+          handleEditAttack={this.handleEditAttack}
+          handleDeleteAttack={this.handleDeleteAttack}
           changeComparison={this.changeComparison}
+          editCharacter={this.editCharacter}
+          handleDeleteCharacter={this.handleDeleteCharacter}
         />
       )
     })
@@ -108,7 +201,7 @@ class App extends React.Component {
 
 
     return (
-      <div className="app">
+      <div className="app" id="app-body">
         <TitleBar>
           Attack Comparison
         </TitleBar>
@@ -136,13 +229,9 @@ class App extends React.Component {
                 Create a Character
               </Modal.Title>
             </Modal.Header>
-            <Modal.Body>
-              <Row>
-                
-              </Row>
-              
+            <Modal.Body>              
               <Form 
-                onSubmit={this.handleCreateCharacter}
+                onSubmit={this.state.createTrueEditFalse ? this.handleCreateCharacter: this.handleEditCharacter}
               >
                 <Form.Group 
                   controlId="CharacterName" 

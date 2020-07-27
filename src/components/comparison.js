@@ -232,9 +232,6 @@ function LineGraph(props) {
     </Container>
   )
 
-
-
-  
 }
 
 export default Comparison;
