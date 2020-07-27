@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/dnd-attack-comparison/static/css/main.e017d741.chunk.css",
+    "main.js": "/dnd-attack-comparison/static/js/main.20665542.chunk.js",
+    "main.js.map": "/dnd-attack-comparison/static/js/main.20665542.chunk.js.map",
+    "runtime-main.js": "/dnd-attack-comparison/static/js/runtime-main.362b4417.js",
+    "runtime-main.js.map": "/dnd-attack-comparison/static/js/runtime-main.362b4417.js.map",
+    "static/js/2.4b5ffa89.chunk.js": "/dnd-attack-comparison/static/js/2.4b5ffa89.chunk.js",
+    "static/js/2.4b5ffa89.chunk.js.map": "/dnd-attack-comparison/static/js/2.4b5ffa89.chunk.js.map",
+    "index.html": "/dnd-attack-comparison/index.html",
+    "precache-manifest.f2a290bf5055368e9b38d7f93bd5721a.js": "/dnd-attack-comparison/precache-manifest.f2a290bf5055368e9b38d7f93bd5721a.js",
+    "service-worker.js": "/dnd-attack-comparison/service-worker.js",
+    "static/css/main.e017d741.chunk.css.map": "/dnd-attack-comparison/static/css/main.e017d741.chunk.css.map",
+    "static/js/2.4b5ffa89.chunk.js.LICENSE.txt": "/dnd-attack-comparison/static/js/2.4b5ffa89.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.362b4417.js",
+    "static/js/2.4b5ffa89.chunk.js",
+    "static/css/main.e017d741.chunk.css",
+    "static/js/main.20665542.chunk.js"
+  ]
+}
