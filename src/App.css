@@ -2,15 +2,11 @@
 
 body {
   font-family: 'Alegreya SC';
-  
-  /* noise: 'd62020';
+  /* background-color: #47040f; */
+  noise: 'd62020';
   density: 100;
-  opacity: 100; */
+  opacity: 100;
 } 
-
-body > #app-body {
-  background-color: '#47040f';
-}
 
 
 .titlebar {
