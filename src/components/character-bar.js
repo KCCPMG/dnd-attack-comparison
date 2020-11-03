@@ -1,72 +1,126 @@
 import React, {useState, useRef} from 'react';
-import {Container, Row, Col, Modal, Form, Overlay, Tooltip, Button, Navbar, InputGroup} from 'react-bootstrap'
+import {Container, Row, Col, Modal, Form, Overlay, Tooltip} from 'react-bootstrap'
 
-var totalRoll = new RegExp(/^(\d{1,2}d\d{1,2})(\+\d{1,2}d\d{1,2})*([-+]\d{1,2})*$/)
+var totalRoll = new RegExp(/^(\d{1,2}d\d{1,2})(\+\d{1,2}d\d{1,2})*([-+]\d{1,2})*$/i)
 
-function CharacterBar(props) {
-  const [expanded, setExpanded] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [attackToEdit, setAttackToEdit] = useState(null)
-  const [showAttackModal, setShowAttackModal] = useState(false)
+class CharacterBar extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      expanded: false,
+      showDeleteCharacterModal: false,
+      attackToEdit: null,
+      showAttackModal: false,
+      test: 0,
+    }
+  }
 
+  
 
-  var expandIcon = <svg 
-    onClick={() => {setExpanded(true)}}
-    width="1em" 
-    height="1em" 
-    viewBox="0 0 16 16" 
-    className="bi bi-chevron-down" 
-    fill="currentColor" 
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path 
-      fillRule="evenodd" 
-      d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
-    />
-  </svg>
+  setExpanded = (bool) => {
+    this.setState({expanded: bool})
+  }
 
-  var collapseIcon = <svg 
-    onClick={() => {setExpanded(false)}}
-    width="1em" 
-    height="1em" 
-    viewBox="0 0 16 16" 
-    className="bi bi-chevron-up" 
-    fill="currentColor" 
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path 
-      fillRule="evenodd" 
-      d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"
-    />
-  </svg>
+  setShowDeleteCharacterModal = (bool) => {
+    this.setState({showDeleteCharacterModal: bool})
+  }
 
-  var deleteIcon = <svg 
-    onClick={(e) => {
-      e.preventDefault();
-      setShowDeleteModal(true);
-    }}
-    width="1em" 
-    height="1em" 
-    viewBox="0 0 16 16" 
-    className="" 
-    fill="currentColor" 
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path 
-      fillRule="evenodd" 
-      d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" 
-    />
-    <path 
-      fillRule="evenodd" 
-      d="M5.23 5.146a.5.5 0 0 0 0 .708l5 5a.5.5 0 0 0 .707-.708l-5-5a.5.5 0 0 0-.708 0z"
-    />
-    <path 
-      fillRule="evenodd" 
-      d="M10.937 5.146a.5.5 0 0 1 0 .708l-5 5a.5.5 0 0 1-.708-.708l5-5a.5.5 0 0 1 .707 0z"
-    />
-    <Modal
-      show={showDeleteModal}
+  hide = () => {
+    this.setState({showDeleteCharacterModal: false})
+  }
+
+  setAttackToEdit = (id) => {
+    this.setState({attackToEdit: id})
+  }
+
+  setShowAttackModal = (bool) => {
+    this.setState({showAttackModal: bool})
+  }
+
+  
+
+  
+
+  render() {
+    
+    var editIcon = <svg 
+      // width="1em" 
+      height="20" 
+      viewBox="0 0 16 16" 
+      className="bi bi-pencil-square" 
+      fill="currentColor" 
+      xmlns="http://www.w3.org/2000/svg"
+      onClick={()=>{this.props.editCharacter(this.props.char.id)}}
+      >
+      <path
+        d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
+      />
+      <path 
+        fillRule="evenodd" 
+        d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
+      />
+    </svg>
+
+    var expandIcon = <svg 
+      onClick={() => {this.setState({expanded: true})}}
+      width="1em" 
+      height="1em" 
+      viewBox="0 0 16 16" 
+      className="bi bi-chevron-down" 
+      fill="currentColor" 
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path 
+        fillRule="evenodd" 
+        d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
+      />
+    </svg>
+
+    var collapseIcon = <svg 
+      onClick={() => {this.setState({expanded: false})}}
+      width="1em" 
+      height="1em" 
+      viewBox="0 0 16 16" 
+      className="bi bi-chevron-up" 
+      fill="currentColor" 
+      xmlns="http://www.w3.org/2000/svg"
+      >
+      <path 
+        fillRule="evenodd" 
+        d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"
+      />
+    </svg>
+
+    var deleteIcon = <svg 
+      onClick={(e) => {
+        e.preventDefault();
+        this.setState({showDeleteCharacterModal: true});
+      }}
+      width="1em" 
+      height="1em" 
+      viewBox="0 0 16 16" 
+      className="" 
+      fill="currentColor" 
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path 
+        fillRule="evenodd" 
+        d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" 
+      />
+      <path 
+        fillRule="evenodd" 
+        d="M5.23 5.146a.5.5 0 0 0 0 .708l5 5a.5.5 0 0 0 .707-.708l-5-5a.5.5 0 0 0-.708 0z"
+      />
+      <path 
+        fillRule="evenodd" 
+        d="M10.937 5.146a.5.5 0 0 1 0 .708l-5 5a.5.5 0 0 1-.708-.708l5-5a.5.5 0 0 1 .707 0z"
+      />
+    </svg>
+
+    let deleteCharModal = <Modal
       centered
+      onHide={this.hide}
+      show={this.state.showDeleteCharacterModal}
     >
       <Modal.Header closeButton>
         <Modal.Title>
@@ -74,15 +128,15 @@ function CharacterBar(props) {
         </Modal.Title>
       </Modal.Header>
       <Container>
-        <h3>
-          Are you sure you want to delete {props.char.name}?
+        <h3 style={{overflowWrap: "break-word"}}>
+          Are you sure you want to delete {this.props.char.name}?
         </h3>
         <br/>
         <Row className="justify-content-around">
           <button
             className="btn btn-outline-dark"
             onClick={()=>{
-              props.handleDeleteCharacter(props.char.id)
+              this.props.handleDeleteCharacter(this.props.char.id)
             }}
           >
             <h3>Yes</h3>
@@ -90,7 +144,8 @@ function CharacterBar(props) {
           <button
             className="btn btn-outline-dark"
             onClick={(e)=>{
-              setShowDeleteModal(false)
+              this.setState({showDeleteCharacterModal: false});
+              // setShowDeleteModal(false)
               e.stopPropagation();
             }}
           >
@@ -98,124 +153,94 @@ function CharacterBar(props) {
           </button>
         </Row>
         <br/>
-        
       </Container>
-
     </Modal>
-  </svg>
 
-  var editIcon = <svg 
-    // width="1em" 
-    height="20" 
-    viewBox="0 0 16 16" 
-    className="bi bi-pencil-square" 
-    fill="currentColor" 
-    xmlns="http://www.w3.org/2000/svg"
-    onClick={()=>{props.editCharacter(props.char.id)}}
-  >
-    <path
-      d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
-    />
-    <path 
-      fillRule="evenodd" 
-      d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"
-    />
-  </svg>
 
-  return (
-    <Container className="character-bar" >
-      <Row 
-        className="character-bar-heading"
-        // as={Row}
-      >
-        <Col className="character-name">
-          {props.char.name}
-        </Col>
-        {/* <Col md="auto"/> */}
-        <Col
-          // as={Col}
-          // cs="3" // What is this? typo?
-          xs="7"
-          sm="4"
-          md="3"
-          lg="3"
-          xl="2"
-          className="expand-toggle ml-auto mr-0 justify-content-between"  
-          // onClick={() => {setExpanded(!expanded)}};
+    return (
+      <Container className="character-bar" >
+        <Row 
+          className="character-bar-heading"
+          // as={Row}
         >
-          {/* <h3 
-            style={{display: 'inline'}}
-            onClick={()=>{
-              setExpanded(!expanded);
-            }}
+          <Col className="character-name">
+            {this.props.char.name}
+          </Col>
+          {/* <Col md="auto"/> */}
+          <Col
+            // as={Col}
+            // cs="3" // What is this? typo?
+            xs="7"
+            sm="4"
+            md="3"
+            lg="3"
+            xl="2"
+            className="expand-toggle ml-auto mr-0 justify-content-between"  
+            // onClick={() => {setExpanded(!expanded)}};
           >
-            {expanded ? "-" : "+"}
-          </h3> */}
-          {/* <img src="../assets/edit-icon.svg" alt="" title="Edit Icon" /> */}
-
-          <Row>
-            <Col>
-              {expanded ? collapseIcon : expandIcon}
-            </Col>
-            <Col>
-              {editIcon}
-            </Col>
-            <Col>
-              {deleteIcon}
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-      {expanded ? <h5 style={{textAlign: 'center'}}> ―Attacks― </h5> : ''}
-      {expanded ? props.char.attacks.map(at => {
-        return (
-          <Attack 
-            attack={at} 
-            key={at.attackId} 
-            changeComparison={props.changeComparison}
-            setAttackToEdit={setAttackToEdit}
-            setShowAttackModal={setShowAttackModal}
-            handleDeleteAttack={props.handleDeleteAttack}
-          />
-        )
-      }) : ""}
-      {expanded ? <AddAttack 
-        handleAddAttack={props.handleAddAttack} 
-        handleEditAttack={props.handleEditAttack}
-        char={props.char}
-        setExpanded={setExpanded}
-        attackToEdit={attackToEdit}
-        showAttackModal={showAttackModal}
-        setAttackToEdit={setAttackToEdit}
-        setShowAttackModal={setShowAttackModal}
-      /> : ""}
-    </Container>
-  )
+            {/* <h3 
+              style={{display: 'inline'}}
+              onClick={()=>{
+                setExpanded(!expanded);
+              }}
+            >
+              {expanded ? "-" : "+"}
+            </h3> */}
+            {/* <img src="../assets/edit-icon.svg" alt="" title="Edit Icon" /> */}
+  
+            <Row>
+              <Col>
+                {this.state.expanded ? collapseIcon : expandIcon}
+              </Col>
+              <Col>
+                {editIcon}
+              </Col>
+              <Col>
+                {deleteIcon}
+                {deleteCharModal}
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+        {this.state.expanded ? <h5 style={{textAlign: 'center'}}> ―Attacks― </h5> : ''}
+        {this.state.expanded ? this.props.char.attacks.map(at => {
+          return (
+            <Attack 
+              attack={at} 
+              key={at.attackId} 
+              changeComparison={this.props.changeComparison}
+              setAttackToEdit={this.setAttackToEdit}
+              setShowAttackModal={this.setShowAttackModal}
+              handleDeleteAttack={this.props.handleDeleteAttack}
+            />
+          )
+        }) : ""}
+        {this.state.expanded ? <AddAttack 
+          handleAddAttack={this.props.handleAddAttack} 
+          handleEditAttack={this.props.handleEditAttack}
+          char={this.props.char}
+          setExpanded={this.setExpanded}
+          attackToEdit={this.state.attackToEdit}
+          showAttackModal={this.state.showAttackModal}
+          setAttackToEdit={this.setAttackToEdit}
+          setShowAttackModal={this.setShowAttackModal}
+        /> : ""}
+      </Container>
+    )
+  }
 }
+
 
 class AddAttack extends React.Component {
 
-  constructor(props) {
-    super(props);
-    // this.state = {
-    //   showAttackModal: false,
-    // }
-  }
-
   render() {
-
     return (
       <Container className="add-attack">
         <div className="add-attack-button-div text-center">
           <button 
             className="btn btn-outline-dark add-attack-button"
-            // data-toggle="modal"
-            // data-target="#exampleModal"
             onClick={() => {
-              // console.log("attack modal shown");
-              
               this.props.setShowAttackModal(true)
-              // ({showAttackModal: true})
             }}
           >
             <h5>+ Add Attack +</h5>
@@ -225,17 +250,12 @@ class AddAttack extends React.Component {
         <EditAttackModal 
           showAttackModal={this.props.showAttackModal}
           hideAttackModal={()=>{this.props.setShowAttackModal(false)}}
-
-          // showAttackModal={this.state.showAttackModal}
-          // hideAttackModal={()=>{this.setState({showAttackModal : false})}}
           char={this.props.char}
           handleAddAttack={this.props.handleAddAttack}
           attackToEdit={this.props.attackToEdit}
           setAttackToEdit={this.props.setAttackToEdit}
           handleEditAttack={this.props.handleEditAttack}
         />
-        
-        
       </Container>
     )
   }
@@ -245,7 +265,6 @@ class AddAttack extends React.Component {
 class EditAttackModal extends React.Component {
   constructor(props) {
     super(props)
-
     this.state = {
       attackName: '',
       firstAttackModifier: '',
@@ -309,9 +328,7 @@ class EditAttackModal extends React.Component {
         show={this.props.showAttackModal}
         centered
         size="lg"
-        // className="modal-lg"
         onHide={()=>{
-          // console.log("hidden");
           this.clearForm();
           this.props.hideAttackModal();
         }}
@@ -325,7 +342,6 @@ class EditAttackModal extends React.Component {
         <Container>
           <Form>
             <Form.Group 
-              controlId="CharacterName" 
               as={Container}
             >
               <Row>
@@ -334,7 +350,6 @@ class EditAttackModal extends React.Component {
                 </Form.Label>
                 <Col>
                   <Form.Control
-                    // sm="6"
                     type="text"
                     name="AttackName"
                     required
@@ -348,6 +363,8 @@ class EditAttackModal extends React.Component {
                   />
                 </Col>
               </Row>
+
+              {/* First Attack */}
               <Row>
                 First Attack
               </Row>
@@ -382,7 +399,6 @@ class EditAttackModal extends React.Component {
                   />
                 </AddAttackCol>
               </Row>
-
 
               {/* Second Attack */}
               <Row>
@@ -492,7 +508,7 @@ class EditAttackModal extends React.Component {
                 </AddAttackCol>
               </Row>
               <br/>
-              <Row className="justify-conent-md-center">
+              <Row className="justify-content-md-center">
                 <Col className="text-center">
                   {this.state.errors.length===0 ? <button 
                   className="btn btn-outline-dark"
@@ -525,16 +541,14 @@ class EditAttackModal extends React.Component {
                     this.props.hideAttackModal();
                   }}
                   >
-                    {this.state.attackId ? "Edit" : "Add"} Attack
+                    {this.state.attackId ? "Update" : "Add"} Attack
                   </button> : null}
                   <br/>
                 </Col>
-              </Row>
-            
+              </Row>            
             </Form.Group>
           </Form>
         </Container>
-
       </Modal>
     )    
   }
@@ -547,19 +561,17 @@ class EditAttackModal extends React.Component {
       this.setState({
         attackId: currentAttack.attackId,
         attackName: currentAttack.attackName,
-        firstAttackModifier: currentAttack.firstAttackModifier,
-        firstAttackDamage: currentAttack.firstAttackDamage,
-        secondAttackModifier: currentAttack.secondAttackModifier,
-        secondAttackDamage: currentAttack.secondAttackDamage,
-        thirdAttackModifier: currentAttack.thirdAttackModifier,
-        thirdAttackDamage: currentAttack.thirdAttackDamage,
-        fourthAttackModifier: currentAttack.fourthAttackModifier,
-        fourthAttackDamage: currentAttack.fourthAttackDamage,
+        firstAttackModifier: currentAttack.firstAttack?.modifier,
+        firstAttackDamage: currentAttack.firstAttack?.damage,
+        secondAttackModifier: currentAttack.secondAttack?.modifier,
+        secondAttackDamage: currentAttack.secondAttack?.damage,
+        thirdAttackModifier: currentAttack.thirdAttack?.modifier,
+        thirdAttackDamage: currentAttack.thirdAttack?.damage,
+        fourthAttackModifier: currentAttack.fourthAttack?.modifier,
+        fourthAttackDamage: currentAttack.fourthAttack?.damage,
       })
     }
   }
-
-
 }
 
 
@@ -574,9 +586,13 @@ function AddAttackCol(props) {
 }
 
 function Attack(props) {
-  const [displayTooltip, setDisplayTooltip] = useState(false);
+  const [displayCompareTooltip, setDisplayCompareTooltip] = useState(false);
+  const [displayEditTooltip, setDisplayEditTooltip] = useState(false);
+  const [displayDeleteTooltip, setDisplayDeleteTooltip] = useState(false);
   const [showDeleteAttackModal, setShowDeleteAttackModal] = useState(false);
-  const ref = useRef(null);
+  const compareRef = useRef(null);
+  const editRef = useRef(null);
+  const deleteRef = useRef(null);
 
   let attack=props.attack;
 
@@ -590,6 +606,10 @@ function Attack(props) {
       props.setAttackToEdit(props.attack)
       props.setShowAttackModal(true);
     }}
+    
+    onMouseEnter={()=>{setDisplayEditTooltip(!displayEditTooltip)}}
+    onMouseLeave={()=>{setDisplayEditTooltip(!displayEditTooltip)}}
+    ref={editRef}
   >
     <path
       d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"
@@ -610,6 +630,9 @@ function Attack(props) {
     viewBox="0 0 16 16" 
     fill="currentColor" 
     xmlns="http://www.w3.org/2000/svg"
+    onMouseEnter={()=>{setDisplayDeleteTooltip(!displayDeleteTooltip)}}
+    onMouseLeave={()=>{setDisplayDeleteTooltip(!displayDeleteTooltip)}}
+    ref={deleteRef}
   >
     <path 
       fillRule="evenodd" 
@@ -647,7 +670,7 @@ function Attack(props) {
           className="btn btn-outline-dark"
           onClick={(e)=>{
             e.attackId = props.attack.attackId;
-            props.handleDeleteAttack(e);
+            this.props.handleDeleteAttack(e);
           }}
         >
           <h3>Yes</h3>
@@ -662,54 +685,55 @@ function Attack(props) {
         </button>
       </Row>
       <br/>
-      
     </Container>
-
   </Modal>
 
 
 
   return (
     <Row className="attack">
-      <Col>
+      <Col xs="4" sm="3" md="2" className="attack-name">
         {attack.attackName}
       </Col>
-      <Col>
-        {attack.firstAttackModifier}/{attack.firstAttackDamage}
-      </Col>
-      <Col>
-        {attack.secondAttackModifier}/{attack.secondAttackDamage}
-      </Col>
-      <Col>
-        {attack.thirdAttackModifier}/{attack.thirdAttackDamage}
-      </Col>
-      <Col>
-        {attack.fourthAttackModifier}/{attack.fourthAttackDamage}
+      <Col xs="2" sm="5" md="7" lg="8">
+        <Row>
+          <Col className="attack-damage">
+            {attack.firstAttack?.modifier}/{attack.firstAttack?.damage}
+          </Col>
+          <Col className="attack-damage">
+            {attack.secondAttack?.modifier}/{attack.secondAttack?.damage}
+          </Col>
+          <Col className="attack-damage">
+            {attack.thirdAttack?.modifier}/{attack.thirdAttack?.damage}
+          </Col>
+          <Col className="attack-damage">
+            {attack.fourthAttack?.modifier}/{attack.fourthAttack?.damage}
+          </Col>
+        </Row>
       </Col>
       <Col 
         className="attack-controls"
-        xs="7"
+        xs="6"
         sm="4"
         md="3"
         lg="2"
         xl="2"
       >
-        <Row 
-          className="ml-auto mr-0 justify-content-between" 
-        >
-          <Col>
-            <input
-              className="attack-control"
-              ref={ref}
-              type="checkbox"
-              checked={attack.compare}
-              onChange={(e)=>{
-                // console.log(attack.attackName,e.target.checked)
-                props.changeComparison(attack.attackId, e.target.checked);
-              }} 
-              onMouseEnter={()=>{setDisplayTooltip(!displayTooltip)}}
-              onMouseLeave={()=>{setDisplayTooltip(!displayTooltip)}}
-            />
+        <Row className="ml-auto mr-0 justify-content-between">
+          <Col className="checkbox-container">            
+            <div 
+              className={`dummy-checkbox ${attack.compare ? "dummy-checkbox-checked" : ""}`}
+              onClick={() => {
+                props.changeComparison(attack.attackId, !attack.compare)
+              }}
+              ref={compareRef}
+              onMouseEnter={()=>{setDisplayCompareTooltip(!displayCompareTooltip)}}
+              onMouseLeave={()=>{setDisplayCompareTooltip(!displayCompareTooltip)}}
+            >
+              <span className="checkbox-span">
+                {attack.compare ? <span>◢</span> : ""}
+              </span>
+            </div>
           </Col>
           <Col>
             {editIcon}
@@ -722,9 +746,9 @@ function Attack(props) {
         {deleteAttackModal}
 
         <Overlay 
-          show={displayTooltip} 
-          placement="right" 
-          target={ref.current}
+          show={displayCompareTooltip} 
+          placement="left" 
+          target={compareRef.current}
         >
           {(props) => (
             <Tooltip {...props}>
@@ -732,8 +756,29 @@ function Attack(props) {
             </Tooltip>
           )}
         </Overlay>
+        <Overlay 
+          show={displayEditTooltip} 
+          placement="left" 
+          target={editRef.current}
+        >
+          {(props) => (
+            <Tooltip {...props}>
+              Edit?
+            </Tooltip>
+          )}
+        </Overlay>
+        <Overlay 
+          show={displayDeleteTooltip} 
+          placement="left" 
+          target={deleteRef.current}
+        >
+          {(props) => (
+            <Tooltip {...props}>
+              Delete?
+            </Tooltip>
+          )}
+        </Overlay>
       </Col>
-
     </Row>
   )
 }

@@ -1,7 +1,8 @@
 import React from 'react';
-import {Container, Row, Col, Modal, Form, Button, Navbar} from 'react-bootstrap'
+import {Row, Col, Modal, Form, Navbar} from 'react-bootstrap'
 import CharacterBar from './components/character-bar';
 import Comparison from './components/comparison';
+import {averageResultFromRollObj, totalCritRollResultObj, totalRollResultObj} from './DiceProbs.js'
 import './App.css';
 
 class App extends React.Component {
@@ -13,12 +14,11 @@ class App extends React.Component {
       characters: [],
       createTrueEditFalse: true,
       editId: null,
-      nextID: 0
+      nextID: 1,
     }
   }
 
   editCharacter = (charId) => {
-
     var charName = this.state.characters.find(cha => {
       return (cha.id===charId)
     }).name
@@ -44,7 +44,7 @@ class App extends React.Component {
       charModalName: '',
       characters: charsCopy,
       createTrueEditFalse: true,
-      nextID: ++this.state.nextID,
+      nextID: this.state.nextID+1,
       editId: null
     })
   }
@@ -66,7 +66,6 @@ class App extends React.Component {
       characters: charsCopy,
       editId: null
     })
-  
   }
 
   handleDeleteCharacter = (charId) => {
@@ -82,15 +81,13 @@ class App extends React.Component {
       charModalName: '',
       characters: charsCopy,
       createTrueEditFalse: true,
-      nextID: ++this.state.nextID,
+      nextID: this.state.nextID+1,
       editId: null
     })
   }
 
   handleAddAttack = (e) => {
     e.preventDefault();
-    // console.log(e.formData);
-    // Need to find the character this weapon belongs to
 
     var {charId, attackName, firstAttackModifier, firstAttackDamage, secondAttackModifier, secondAttackDamage, thirdAttackModifier, thirdAttackDamage, fourthAttackModifier, fourthAttackDamage} = e.formData;
 
@@ -102,14 +99,10 @@ class App extends React.Component {
     character.attacks.push({
       attackName, 
       attackId, 
-      firstAttackModifier, 
-      firstAttackDamage, 
-      secondAttackModifier, 
-      secondAttackDamage, 
-      thirdAttackModifier, 
-      thirdAttackDamage, 
-      fourthAttackModifier, 
-      fourthAttackDamage,
+      firstAttack: this.createAttack(firstAttackModifier, firstAttackDamage),
+      secondAttack: this.createAttack(secondAttackModifier, secondAttackDamage),
+      thirdAttack: this.createAttack(thirdAttackModifier, thirdAttackDamage),
+      fourthAttack: this.createAttack(fourthAttackModifier, fourthAttackDamage),
       compare: false
     })
 
@@ -128,7 +121,15 @@ class App extends React.Component {
       for (let attackIndex in character.attacks) {
         let attack = character.attacks[attackIndex]
         if (attack.attackId === e.formData.attackId) {
-          character.attacks[attackIndex] = e.formData;
+          this.updateAttack(character.attacks[attackIndex].firstAttack, e.formData.firstAttackModifier, e.formData.firstAttackDamage) 
+          
+          this.updateAttack(character.attacks[attackIndex].secondAttack, e.formData.secondAttackModifier, e.formData.secondAttackDamage) 
+
+          this.updateAttack(character.attacks[attackIndex].thirdAttack, e.formData.thirdAttackModifier, e.formData.thirdAttackDamage) 
+
+          this.updateAttack(character.attacks[attackIndex].fourthAttack, e.formData.fourthAttackModifier, e.formData.fourthAttackDamage) 
+
+          character.attacks[attackIndex].attackName = e.formData.attackName;
           break;
         }
       }
@@ -138,9 +139,7 @@ class App extends React.Component {
 
   handleDeleteAttack = (e) => {
     e.preventDefault();
-
     let charsCopy = JSON.parse(JSON.stringify(this.state.characters));
-    console.log(e.attackId);
 
     for (let character of charsCopy) {
       for (let attackIndex in character.attacks) {
@@ -167,11 +166,29 @@ class App extends React.Component {
       }
     }
   }
+
+  createAttack = (mod, damage) => {
+    return {
+      modifier: mod,
+      damage: damage,
+      averageCrit: averageResultFromRollObj(totalCritRollResultObj(damage)) || 0,
+      averageDamageRoll: averageResultFromRollObj(totalRollResultObj(damage)) || 0,
+    }
+  }
+
+  updateAttack = (attack, newMod, newDamage) => {
+    if (attack.modifier !== newMod || attack.damage !== newDamage) {
   
+      attack.averageCrit = averageResultFromRollObj(totalCritRollResultObj(newDamage))
+  
+      attack.averageDamageRoll = averageResultFromRollObj(totalRollResultObj(newDamage))
+  
+      attack.modifier = newMod;
+      attack.damage = newDamage;
+    }
+  }
 
   render() {
-    // console.log((new Date()).toLocaleTimeString());
-    
     let characters = this.state.characters.map(char => {
       return (
         <CharacterBar 
@@ -203,15 +220,12 @@ class App extends React.Component {
     return (
       <div className="app" id="app-body">
         <TitleBar>
-          Attack Comparison
+          D20 Attack Comparison
         </TitleBar>
         <div className="add-character-button-div text-center">
           <button 
-            className="btn btn-outline-dark add-character-button"
-            // data-toggle="modal"
-            // data-target="#exampleModal"
-            onClick={() => {
-              // console.log("shown");
+            className="btn btn-outline-dark"
+            onClick={(e) => {
               this.setState({showCharacterModal: true})
             }}
           >
@@ -220,26 +234,24 @@ class App extends React.Component {
           <Modal 
             show={this.state.showCharacterModal}
             onHide={()=>{
-              // console.log("hidden")
               this.setState({showCharacterModal: false})
             }}
           >
             <Modal.Header closeButton>
               <Modal.Title>
-                Create a Character
+                {this.state.createTrueEditFalse ? "Create a Character" : "Edit Character"}
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>              
               <Form 
+                className="text-center"
                 onSubmit={this.state.createTrueEditFalse ? this.handleCreateCharacter: this.handleEditCharacter}
               >
                 <Form.Group 
                   controlId="CharacterName" 
                   as={Row}
                 >
-                  <Form.Label 
-                    column sm="4"
-                    >
+                  <Form.Label column sm="4">
                     Character Name
                   </Form.Label>
                   <Col sm="6">
@@ -251,21 +263,18 @@ class App extends React.Component {
                       placeholder="Character Name"
                       onChange={(e)=>{
                         this.setState({charModalName: e.target.value})
-                        // console.log(e.target.value)
                       }}
                       value={this.state.charModalName}
-                      />
+                    />
                   </Col>
-
                 </Form.Group>
 
-                <Button type="submit">
-                  Submit
-                </Button>
+                <button className="btn btn-outline-dark" type="submit">
+                  {this.state.createTrueEditFalse ? "Create" : "Update"}
+                </button>
                 
               </Form>
             </Modal.Body>
-            
           </Modal>
         </div>
         {characters}

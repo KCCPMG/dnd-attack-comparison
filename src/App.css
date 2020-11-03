@@ -3,9 +3,9 @@
 body {
   font-family: 'Alegreya SC';
   /* background-color: #47040f; */
-  noise: 'd62020';
+  /* noise: 'd62020';
   density: 100;
-  opacity: 100;
+  opacity: 100; */
 } 
 
 
@@ -18,10 +18,6 @@ body {
   padding: 30px;
   display: block;
 }
-
-/* .add-character-button {
-  
-} */
 
 .add-attack-button {
   text-align: 'center'
@@ -55,16 +51,51 @@ body {
 
 .character-name {
   width: auto;
+  overflow-wrap: break-word;
 }
 
 .expand-toggle > .row > .col > svg {
   cursor: pointer;  
 }
 
+.attack-name {
+  overflow-wrap: break-word;
+}
+
+.attack-damage {
+  overflow-wrap: break-word;
+}
+
 .attack-control {
   cursor: pointer;
   padding-bottom: 3px;
 }
+
+.checkbox-container input[type="checkbox"] {
+  opacity: 0;
+  z-index: 1;
+}
+
+.attack-control:checked {
+  /* box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(0, 0, 0, 0.25) */
+}
+
+.attack-control-checkbox-label:before {
+  /* box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(0, 255, 0, 0.25);
+  background-color: black!important; */
+
+  content: "";
+  display: inline-block;
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  left: 0;
+  margin-left: -20px;
+  border: 1px solid #cccccc;
+  border-radius: 3px;
+}
+
+
 
 .svg {
   transform: translateY(50);
@@ -86,3 +117,33 @@ body {
   margin-bottom: 25px;
 }
 
+.dummy-checkbox {
+  display: inline-block;
+  position: absolute;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 2px;
+  width: 13px;
+  height: 13px;
+  top: 4px;
+
+}
+
+.dummy-checkbox:hover {
+  cursor: pointer;
+}
+
+.dummy-checkbox-checked {
+  background-color: black;
+  color: white;
+  
+}
+
+.checkbox-span {
+  position: absolute;
+  bottom: -5px;
+  left: 0.5px;
+  font-family: 'Times New Roman';
+  font-size: 13px;
+
+}

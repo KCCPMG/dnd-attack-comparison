@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
-import {Container, Row, Col, Modal, Form, Button, Navbar, InputGroup} from 'react-bootstrap'
-import { Chart, Line } from 'react-chartjs-2';
+import React from 'react';
+import {Container, Row, Col} from 'react-bootstrap'
+import {Line} from 'react-chartjs-2';
+import {averageResult, critDamage} from '../DiceProbs.js'
 
 function Comparison(props) {
   let characters = props.characters;
@@ -27,21 +28,19 @@ function Comparison(props) {
           {attack.characterName}-{attack.attackName}
         </Col>
         <Col>
-          {attack.firstAttackModifier}/{attack.firstAttackDamage}
+          {attack.firstAttack.modifier}/{attack.firstAttack.damage}
         </Col>
         <Col>
-          {attack.secondAttackModifier}/{attack.secondAttackDamage}
+          {attack.secondAttack.modifier}/{attack.secondAttack.damage}
         </Col>
         <Col>
-          {attack.thirdAttackModifier}/{attack.thirdAttackDamage}
+          {attack.thirdAttack.modifier}/{attack.thirdAttack.damage}
         </Col>
         <Col>
-          {attack.fourthAttackModifier}/{attack.fourthAttackDamage}
+          {attack.fourthModifier}/{attack.fourthAttack.damage}
         </Col>
-
       </Row>
     )
-    
   });
 
   return (
@@ -52,77 +51,37 @@ function Comparison(props) {
       <h5 style={{textAlign: 'center'}}> ―Attacks― </h5>
       {renderedAttacks}
       <LineGraph attacks={props.attacks} />
-    {/* Need to do all the d3 stuff here. Graph y-axis projected damage x-axis target AC
-    Add different options for average damage, max damage, min damage? */}
     </Container>
   )
 }
 
 function LineGraph(props) {
 
-  // Confirmed
-  function minRoll(roll) {
-    if (roll==="") return 0;
-    let [dice, dieSize] = roll.split(/d/i);
-    return Number(dice);
-  }
-
-  // Confirmed
-  function maxRoll(roll) {
-    if (roll==="") return 0;
-    let [dice, dieSize] = roll.split(/d/i);
-    return (Number(dice) * (Number(dieSize) || 1));
-  }
-
-  // Confirmed
-  function averageRoll(roll) {
-    return (minRoll(roll) + maxRoll(roll)) / 2;
-  }
-
-  // Confirmed
-  function averageDamage(damage) {
-    damage = damage || ""
-    let components = damage.split("+");
-    let averageSum = 0;
-
-    for (let component of components) {
-      if (component.match(/d/i)) {
-        averageSum = averageSum + averageRoll(component);
-      } else {
-        averageSum = averageSum + Number(component);
-      }
-    }
-
-    return averageSum;
-  }
-
-  // Confirmed
-  function projectedDamage(modifier, damage, AC) {
-    let chanceToHit = (Number(modifier) + 20 - AC) *.05;
-    chanceToHit = Math.min(chanceToHit, 1);
-    chanceToHit = Math.max(chanceToHit, 0);
-    return chanceToHit * averageDamage(damage);
-  }
-  
-  // Given an attack, break down into all components and create dataset to graph
-  // Confirmed
   function processAttack(attack) {
-    let {characterName, attackName, firstAttackModifier, firstAttackDamage, secondAttackModifier, secondAttackDamage,thirdAttackModifier, thirdAttackDamage, fourthAttackModifier, fourthAttackDamage} = attack;
+    let {characterName, attackName, firstAttack, secondAttack, thirdAttack, fourthAttack} = attack;
 
     let ACRange = [];
     for (let i=0; i<31; i++) {
       ACRange.push(i);
     }
 
-    let dataset = ACRange.map(ac => {
-      let expectedDamage = projectedDamage(firstAttackModifier, firstAttackDamage, ac) + projectedDamage(secondAttackModifier, secondAttackDamage, ac) + 
-      projectedDamage(thirdAttackModifier, thirdAttackDamage, ac) + 
-      projectedDamage(fourthAttackModifier, fourthAttackDamage, ac);
+    let dataset;
+
+    dataset = ACRange.map(ac => {
+      let avg = 0;
+      for (let att of [firstAttack, secondAttack, thirdAttack, fourthAttack]) {
+        let successes = regularSuccessCount(att.modifier, ac);
+        let averageDamage = att.averageDamageRoll || 0;
+        let averageCrit = att.averageCrit || 0;
+
+        avg += ((successes * averageDamage) + averageCrit)/20;
+      }
+
       return {
-        characterName, 
-        attackName, 
-        expectedDamage,
-        AC: ac
+        characterName,
+        attackName,
+        expectedDamage: avg,
+        AC: ac,
       }
     })
 
@@ -136,14 +95,9 @@ function LineGraph(props) {
     'blue'
   ]
 
-  // console.log({props})
-
   // Need to construct a dataset out of each attack
   var datasets = props?.attacks?.map((attack, i) => {
-    
-
     var borderColor = borderColors[i % borderColors.length]
-
     var {characterName, attackName} = attack
     var label = `${characterName} - ${attackName}`;
 
@@ -153,33 +107,18 @@ function LineGraph(props) {
       borderColor,
       backgroundColor: 'rgba(0,0,0,0)',
       label,
-      data
+      data,
+      lineTension: 0
     }
   })
 
-  // console.log(datasets);
-
-
-  // chartjs
-  var PADDING;
-  var HEIGHT;
-  var WIDTH;
-
   var lineChart = (
     <Line 
-        
       data={{
         labels: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30],
         datasets: datasets
       }}
-
       options={{
-        // title: {
-        //   display: true,
-        //   text: "―Attack Comparison Against AC Values―",
-        //   fontFamily: 'Alegreya SC',
-        //   fontSize: '20'
-        // },
         scales: {
           yAxes: [{
             scaleLabel: {
@@ -207,23 +146,8 @@ function LineGraph(props) {
     />
   )
 
-
-
-
-  // console.log("Chart Defaults", Chart.defaults);
-  // console.log("Line Chart", lineChart)
-
   return (
     <Container xs="12">
-      {/* <Chart 
-        type="line"
-        data={{
-          label: "Huraduradingus",
-          datasets: {
-            data: [1,2,3,4,5]
-          }
-        }}
-      /> */}
       <br/>
       <h5 style={{textAlign: 'center'}}>
         ―Attack Comparison Against AC Values―
@@ -231,7 +155,59 @@ function LineGraph(props) {
       {lineChart}
     </Container>
   )
+}
 
+function minRoll(rollStr) {
+  if (rollStr==="") return 0;
+  let dice = rollStr.split(/d/i)[0];
+  return Number(dice);
+}
+
+function maxRoll(rollStr) {
+  if (rollStr==="") return 0;
+  let [dice, dieSize] = rollStr.split(/d/i);
+  return (Number(dice) * (Number(dieSize) || 1));
+}
+
+function averageRoll(rollStr) {
+  return (minRoll(rollStr) + maxRoll(rollStr)) / 2;
+}
+
+function averageDamage(damage) {
+  damage = damage || ""
+  let components = damage.split("+");
+  let averageSum = 0;
+
+  for (let component of components) {
+    if (component.match(/d/i)) {
+      averageSum = averageSum + averageRoll(component);
+    } else {
+      averageSum = averageSum + Number(component);
+    }
+  }
+
+  return averageSum;
+}
+
+// No longer necessary
+function projectedDamage(modifier, damage, AC) {
+  if (damage === "") return 0;
+  modifier = Number(modifier);
+  let averageNormalDamage = averageDamage(damage);
+  let averageDamageRolls = [];
+  for (let attackRoll = 1; attackRoll<=20; attackRoll++) {
+    if (attackRoll === 1) averageDamageRolls.push(0);
+    else if (attackRoll === 20) averageDamageRolls.push(averageResult(critDamage(damage)))
+    else {
+      if (attackRoll+modifier<AC) averageDamageRolls.push(0);
+      else averageDamageRolls.push(averageNormalDamage);
+    }
+  }
+  return averageDamageRolls.reduce((a,b) => a+b)/20;
+}
+
+function regularSuccessCount(modifier, AC) {
+  return Math.min(Math.max(20-(AC-modifier), 0), 18)
 }
 
 export default Comparison;
