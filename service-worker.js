@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/dnd-attack-comparison/precache-manifest.f2a290bf5055368e9b38d7f93bd5721a.js"
+  "/dnd-attack-comparison/precache-manifest.229a89f54de63f7f3cef9e581fbed35e.js"
 );
 
 self.addEventListener('message', (event) => {
